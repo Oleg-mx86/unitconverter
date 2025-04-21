@@ -32,7 +32,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown('<div class="title">Універсальний Конвертер Одиниць</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Конвертація довжини, ваги, температури, обʼєму та валюти</div><br>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Конвертація довжини, ваги, температури, обʼєму, валюти та з історією</div><br>', unsafe_allow_html=True)
 
 # Історія конвертацій
 if "history" not in st.session_state:
@@ -69,43 +69,61 @@ def convert_currency(value, from_unit, to_unit):
 category = st.selectbox("Оберіть категорію:", ["Довжина", "Вага", "Температура", "Обʼєм", "Валюта"])
 
 if category:
+    st.markdown("**Наприклад:**")
+    if category == "Довжина":
+        st.caption("1 метр = 100 сантиметрів, 1 миля ≈ 1.609 км")
+    elif category == "Вага":
+        st.caption("1 кг = 1000 г, 1 фунт ≈ 0.453 кг")
+    elif category == "Температура":
+        st.caption("0 °C = 32 °F = 273.15 К")
+    elif category == "Обʼєм":
+        st.caption("1 літр = 1000 мл, 1 галон ≈ 3.785 л")
+    elif category == "Валюта":
+        st.caption("1 USD ≈ 38 UAH (демо)")
+
     value = st.number_input("Введіть значення:", format="%.4f")
 
     if category == "Довжина":
         units = ["метри", "кілометри", "милі", "фути", "дюйми"]
-        from_unit = st.selectbox("З одиниці:", units)
-        to_unit = st.selectbox("В одиницю:", units)
-        result = convert_length(value, from_unit, to_unit)
-
     elif category == "Вага":
         units = ["кілограми", "грами", "фунти", "унції"]
-        from_unit = st.selectbox("З одиниці:", units)
-        to_unit = st.selectbox("В одиницю:", units)
-        result = convert_weight(value, from_unit, to_unit)
-
     elif category == "Температура":
         units = ["Цельсій", "Фаренгейт", "Кельвін"]
-        from_unit = st.selectbox("З одиниці:", units)
-        to_unit = st.selectbox("В одиницю:", units)
-        result = convert_temperature(value, from_unit, to_unit)
-
     elif category == "Обʼєм":
         units = ["літри", "мілілітри", "галони", "чашки"]
-        from_unit = st.selectbox("З одиниці:", units)
-        to_unit = st.selectbox("В одиницю:", units)
-        result = convert_volume(value, from_unit, to_unit)
-
     elif category == "Валюта":
         units = ["USD", "EUR", "UAH", "GBP"]
-        from_unit = st.selectbox("З валюти:", units)
-        to_unit = st.selectbox("У валюту:", units)
-        st.caption("*Курси валют вказані умовно для демонстрації.")
-        result = convert_currency(value, from_unit, to_unit)
 
-    st.markdown(f'<div class="result-box">Результат: {result:.4f} {to_unit}</div>', unsafe_allow_html=True)
-    st.session_state["history"].append(f"{category}: {value} {from_unit} → {result:.4f} {to_unit}")
+    from_unit = st.selectbox("З одиниці:", units)
+    to_unit = st.selectbox("В одиницю:", units)
+
+    if st.button("Конвертувати"):
+        if category == "Довжина":
+            result = convert_length(value, from_unit, to_unit)
+        elif category == "Вага":
+            result = convert_weight(value, from_unit, to_unit)
+        elif category == "Температура":
+            result = convert_temperature(value, from_unit, to_unit)
+        elif category == "Обʼєм":
+            result = convert_volume(value, from_unit, to_unit)
+        elif category == "Валюта":
+            result = convert_currency(value, from_unit, to_unit)
+            st.caption("*Курси валют вказані умовно для демонстрації.")
+
+        st.markdown(f'<div class="result-box">Результат: {result:.4f} {to_unit}</div>', unsafe_allow_html=True)
+        st.session_state["history"].append(f"{category}: {value} {from_unit} → {result:.4f} {to_unit}")
 
 # --- Відображення історії ---
 st.subheader("Історія конвертацій")
 if st.session_state["history"]:
     st.dataframe(pd.DataFrame(st.session_state["history"], columns=["Операція"]))
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Очистити історію"):
+            st.session_state["history"] = []
+            st.experimental_rerun()
+    with col2:
+        df = pd.DataFrame(st.session_state["history"], columns=["Операція"])
+        csv = df.to_csv(index=False).encode('utf-8')
+        st.download_button("⬇️ Завантажити CSV", data=csv, file_name="history.csv", mime="text/csv")
