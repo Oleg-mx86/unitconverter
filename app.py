@@ -33,7 +33,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown('<div class="title">Універсальний Конвертер Одиниць</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Конвертація довжини, ваги, температури, обʼєму, валюти, часу, площі, швидкості — з історією</div><br>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle"></div><br>', unsafe_allow_html=True)
 
 if "history" not in st.session_state:
     st.session_state["history"] = []
