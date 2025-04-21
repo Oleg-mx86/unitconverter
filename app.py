@@ -61,6 +61,32 @@ def convert_speed(value, from_unit, to_unit):
     factors = {"км/год": 1, "м/с": 3.6, "мили/год": 1.60934}
     return value * factors[from_unit] / factors[to_unit]
 
+def convert_length(value, from_unit, to_unit):
+    factors = {"метри": 1, "кілометри": 1000, "милі": 1609.34, "фути": 0.3048, "дюйми": 0.0254}
+    return value * factors[from_unit] / factors[to_unit]
+
+def convert_weight(value, from_unit, to_unit):
+    factors = {"кілограми": 1, "грами": 0.001, "фунти": 0.453592, "унції": 0.0283495}
+    return value * factors[from_unit] / factors[to_unit]
+
+def convert_temperature(value, from_unit, to_unit):
+    if from_unit == to_unit:
+        return value
+    if from_unit == "Цельсій":
+        return value * 9 / 5 + 32 if to_unit == "Фаренгейт" else value + 273.15
+    if from_unit == "Фаренгейт":
+        return (value - 32) * 5 / 9 if to_unit == "Цельсій" else (value - 32) * 5 / 9 + 273.15
+    if from_unit == "Кельвін":
+        return value - 273.15 if to_unit == "Цельсій" else (value - 273.15) * 9 / 5 + 32
+
+def convert_volume(value, from_unit, to_unit):
+    factors = {"літри": 1, "мілілітри": 0.001, "галони": 3.78541, "чашки": 0.24}
+    return value * factors[from_unit] / factors[to_unit]
+
+def convert_currency(value, from_unit, to_unit):
+    rates = {"USD": 1, "EUR": 0.93, "UAH": 38.0, "GBP": 0.8}
+    return value / rates[from_unit] * rates[to_unit]
+
 category = st.selectbox("Оберіть категорію:", ["Довжина", "Вага", "Температура", "Обʼєм", "Валюта", "Час", "Площа", "Швидкість"])
 
 value = st.number_input("Введіть значення:", format="%.4f")
@@ -92,8 +118,16 @@ if st.button("Конвертувати"):
         result = convert_area(value, from_unit, to_unit)
     elif category == "Швидкість":
         result = convert_speed(value, from_unit, to_unit)
-    else:
-        result = value  # fallback на випадок помилки
+    elif category == "Довжина":
+        result = convert_length(value, from_unit, to_unit)
+    elif category == "Вага":
+        result = convert_weight(value, from_unit, to_unit)
+    elif category == "Температура":
+        result = convert_temperature(value, from_unit, to_unit)
+    elif category == "Обʼєм":
+        result = convert_volume(value, from_unit, to_unit)
+    elif category == "Валюта":
+        result = convert_currency(value, from_unit, to_unit)
 
     unit_display = unit_ending_map.get(to_unit, to_unit)
     st.markdown(f'<div class="result-box">Результат: {result:.4f} {unit_display}</div>', unsafe_allow_html=True)
