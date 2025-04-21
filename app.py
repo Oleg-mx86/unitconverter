@@ -32,7 +32,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown('<div class="title">Універсальний Конвертер Одиниць</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Конвертація довжини, ваги, температури, обʼєму та валюти.</div><br>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Конвертація довжини, ваги, температури, обʼєму та валюти</div><br>', unsafe_allow_html=True)
 
 # Історія конвертацій
 if "history" not in st.session_state:
